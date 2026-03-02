@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 campo = []
 
-with open('fm0209.csv', mode='r') as file:
+with open('fm0229.csv', mode='r') as file:
     reader = csv.DictReader(file)
     for linha in reader:
         campo.append(float(linha['Electric_Field_V_m']))
@@ -11,25 +11,51 @@ with open('fm0209.csv', mode='r') as file:
 # print(len(campo))
 
 variacao = []
+p = 0
+pi = 0
+k = len(campo)
 
-for i in range(len(campo)):
-    if i == 0:
-        variacao.append(0)
-    else:
-        variacao.append(campo[i] - campo[i-1])
+def calcVariacao(k):
+    global variacao, p, pi, campo
 
-x = list(range(len(campo)))
+    for i in range(1, k+1, 6):
+        # if i >= k+1:
+        #     return variacao, p, pi
+        if i == 0:
+            variacao.append(0)
+        else:
+            var = campo[i] - campo[i-1]
+            variacao.append(var)
+            if var >= 50 and var < 100:
+                p += 1
+            if var >= 100:
+                pi += 1
+        # calcVariacao(k)
+    return variacao, p, pi
 
+calcVariacao(k) 
+
+x = list(range(len(variacao)))
+print("Quantidade de pulsos: ", p)
+print("Quantidade de pulsos intensos: ", pi)
+
+# 
+# configurações de plotagem
+#
 # padrão de estilo
 plt.style.use('ggplot')
+plt.figure(figsize=(8,5))
 
 # plt.ion()
 
-plt.title('variações de campo e pulsos')
-plt.ylabel('V/m')
-plt.xlabel('tempo')
-plt.scatter(x, variacao)
-plt.legend()
+# plt.title('variações de campo e pulsos', fontsize=16, fontweight='bold', fontstyle='italic', fontfamily='monospace')
+plt.title('variações de campo e pulsos', fontsize=16, fontweight='bold', fontfamily='monospace')
+plt.xlabel('tempo', fontsize=10, fontfamily='monospace')
+plt.ylabel('V/m', fontsize=10, fontfamily='monospace')
+plt.tight_layout()
+plt.scatter(x, variacao, label='pulsos')
+# plt.scatter(x, variacao, label="pulsos")
+plt.legend(fontsize=12, frameon=True, framealpha=0.7 , facecolor='white')
 plt.show()
 
 # plt.pause(5)
